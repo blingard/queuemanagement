@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Save User</title>
+  <link rel="stylesheet" type="text/css" th:href="@{/css/bootstrap.min.css}"/>
+</head>
+<body>
+<div class="container">
+  <div class="panel panel-default">
+    <div class="panel-heading">Confirmation</div>
+    <div class="panel-body">
+      <div class="form-group">
+        <label>Nom</label>
+        <label th:text="${user.name}"></label>
+      </div>
+
+      <div class="form-group">
+        <label>Login</label>
+        <label th:text="${user.login}"></label>
+      </div>
+
+      <div class="form-group">
+        <label>Type Utilisateur</label>
+        <label th:text="${user.userType}"></label>
+      </div>
+
+      <div class="form-group">
+        <label>Status</label>
+        <label th:text="${user.status}"></label>
+      </div>
+      <div class="container">
+        <a class="btn btn-primary" th:href="@{/v2/user}">Ok</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
