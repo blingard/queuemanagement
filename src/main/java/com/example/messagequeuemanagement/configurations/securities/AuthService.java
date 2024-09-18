@@ -1,6 +1,7 @@
 package com.example.messagequeuemanagement.configurations.securities;
 
 import com.example.messagequeuemanagement.dtos.LoginRequest;
+import com.example.messagequeuemanagement.dtos.UserDetailsImpl;
 import com.example.messagequeuemanagement.entities.Utilisateur;
 import com.example.messagequeuemanagement.implementations.UserDetailsServiceImpl;
 import com.example.messagequeuemanagement.repositories.UtilisateurRepository;
@@ -30,7 +31,7 @@ public class AuthService {
                         loginRequest.getPassword()
                 )
         );
-        UserDetails use = service.loadUserByUsername(loginRequest.getLogin());
+        UserDetailsImpl use = service.loadUserByUsername(loginRequest.getLogin());
         return jwtService.generateToken(use);
     }
 

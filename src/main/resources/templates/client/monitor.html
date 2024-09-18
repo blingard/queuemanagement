@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Queuing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Style de la barre de navigation */
+        nav {
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        nav ul li {
+            margin: 0 15px;
+        }
+
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        /* Container pour la liste d'utilisateurs et la vidéo */
+        .container1 {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            padding: 20px;
+        }
+
+        /* Style de la section gauche (liste des utilisateurs) */
+        .left-section {
+            flex: 1;
+            margin-right: 20px;
+        }
+
+        .left-section ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .left-section ul li {
+            background-color: #f4f4f4;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        /* Style de la section droite (vidéo) */
+        .right-section {
+            flex: 2;
+        }
+
+        video {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        /* Responsive design */
+        @media screen and (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+
+            .left-section {
+                margin-right: 0;
+                margin-bottom: 20px;
+            }
+        }
+
+        .auto {
+            padding: 10px;
+            text-align: center;
+        }
+
+        .center {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+    </style>
+
+    <link rel="stylesheet" th:href="@{/css/bootstrap.css}">
+    <!--<script th:src="@{/stomp.umd.min.js}"></script>-->
+    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7.0.0/bundles/stomp.umd.min.js"></script>
+    <script th:src="@{/js/jquery-3.6.0.min.js}"></script>
+
+</head>
+<body>
+<audio id="audioPlayer" style="display: none" th:src="@{/audio/ascend.pm3}" controls></audio>
+    <nav>
+        <ul>
+            <li><a >QUEUEING</a></li>
+        </ul>
+    </nav>
+    <button class="btn btn-primary" id="btn" onclick="connect()">Start</button>
+    <div class="container1" id="container1" style="display: none">
+        <div class="left-section">
+            <h2></h2>
+            <ul id="userList">
+            </ul>
+        </div>
+
+        <div class="right-section">
+            <video muted autoplay>
+                <source th:src="@{${video}}" type="video/mp4">
+                Votre navigateur ne supporte pas l'élément vidéo.
+            </video>
+            <div class="auto">
+                <div class="time center"></div>
+                <div class="date center"></div>
+            </div>
+        </div>
+    </div>
+<script>
+    const audio = document.getElementById('audioPlayer');
+    function time_loop(){
+        var hour,min,ampm,mo,d,yr,s;
+        let mos = ['','January','Febuary','March','April','May','June','July','August','September','October','November','December']
+        var datetime = new Date();
+        hour = datetime.getHours()
+        min = datetime.getMinutes()
+        s = datetime.getSeconds()
+        ampm = hour >= 12 ? "PM" : "AM";
+        mo = mos[datetime.getMonth()]
+        d = datetime.getDay()
+        yr = datetime.getFullYear()
+        hour = hour >= 12 ? hour - 12 : hour;
+        hour = String(hour).padStart(2,0)
+        min = String(min).padStart(2,0)
+        s = String(s).padStart(2,0)
+        $('.time').text(hour+":"+min+":"+s+" "+ampm)
+        $('.date').text(mo+" "+d+", "+yr)
+    }
+    $(function(){
+        setInterval(() => {
+            time_loop()
+        }, 1000);
+    })
+
+
+
+
+    const topic = "/topic/greetings";
+    const app = "/app/hello";
+    const client = new StompJs.Client({
+        brokerURL: url
+    });
+
+    client.onConnect = (frame) => {
+        client.subscribe(topic, (greeting) => {
+            let ul = document.getElementById('userList');
+            let lis = ul.querySelectorAll('li');
+            lis.forEach(value => {
+                if(value.id == JSON.parse(greeting.body).id) {
+                    value.remove();
+                }
+            });
+            let li = document.createElement('li');
+            li.textContent = JSON.parse(greeting.body).code + ' ' + JSON.parse(greeting.body).cashier;
+            li.id = JSON.parse(greeting.body).id;
+            ul.appendChild(li);
+
+            let speech = new SpeechSynthesisUtterance("Numero "+JSON.parse(greeting.body).code.replace(/-/g, '')+", "+JSON.parse(greeting.body).cashier);
+            speech.lang = 'fr-FR';
+            speech.voice
+            audio.play();
+            setTimeout(() => {
+                window.speechSynthesis.speak(speech);
+            }, 500);
+        });
+    };
+
+
+    client.onWebSocketError = (error) => {
+        console.error('Error with websocket', error);
+    };
+
+    client.onStompError = (frame) => {
+        console.error('Broker reported error: ' + frame.headers['message']);
+        console.error('Additional details: ' + frame.body);
+    };
+
+    function connect() {
+        client.activate();
+        document.getElementById('container1').style.display = 'flex';
+        document.getElementById('btn').style.display = 'none';
+    }
+
+    function disconnect() {
+        client.deactivate();
+    }
+
+
+</script>
+</body>
+</html>

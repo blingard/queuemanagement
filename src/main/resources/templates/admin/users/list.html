@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>List</title>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+    <link rel="stylesheet" th:href="@{/admin/plugins/fontawesome-free/css/all.min.css}">
+    <link rel="stylesheet" th:href="@{/admin/dist/css/adminlte.min.css}">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+    <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+            </li>
+        </ul>
+
+        <ul class="navbar-nav ml-auto">
+            <li class="nav-item">
+                <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+                    <i class="fas fa-th-large"></i>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+
+    <aside class="main-sidebar sidebar-dark-primary elevation-4">
+        <a class="brand-link">
+            <img th:src="@{/admin/dist/img/q.png}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8" />
+            <span class="brand-text font-weight-light">QUEUING</span>
+        </a>
+
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                <img th:src="@{/admin/dist/img/user2-160x160.jpg}" class="img-circle elevation-2" alt="User Image">
+            </div>
+            <div class="info">
+                <span id="username" class="d-block"></span>
+            </div>
+        </div>
+        <div class="sidebar">
+
+            <nav class="mt-2">
+                <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    <li class="nav-item">
+                        <a class="nav-link">
+                            DashBoard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <!--<i class="nav-icon fas fa-user-alt"></i>-->
+                            <p>
+                                Users
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a th:href="@{/admin/actions/create}" class="nav-link">
+                                    <!--<i class="fas fa-plus nav-icon"></i>-->
+                                    <p>Create</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a th:href="@{/admin/actions/list}" class="nav-link active">
+                                    <!--<i class="fas fa-user nav-icon"></i>-->
+                                    <p>List</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#" class="nav-link">
+                            <!--<i class="nav-icon fas fa-user-alt"></i>-->
+                            <p>
+                                Motifs
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+                        </a>
+                        <ul class="nav nav-treeview">
+                            <li class="nav-item">
+                                <a th:href="@{/admin/motifs/create}" class="nav-link">
+                                    <!--<i class="fas fa-plus nav-icon"></i>-->
+                                    <p>Create</p>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a th:href="@{/admin/motifs/list}" class="nav-link active">
+                                    <!--<i class="fas fa-user nav-icon"></i>-->
+                                    <p>List</p>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/home}" th:target="_blank" class="nav-link">
+                            <p>
+                                Home
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a th:href="@{/ticket}" th:target="_blank" class="nav-link">
+                            <p>
+                                Ticket
+                            </p>
+                        </a>
+                    </li>
+
+
+                    <li class="nav-item">
+                        <a th:href="@{/admin/actions/file}" class="nav-link">
+                            <!--<i class="nav-icon fas fa-sign-out"></i>-->
+                            <p>
+                                Fichier
+                            </p>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/admin/logout" class="nav-link">
+                            <i class="nav-icon fas fa-sign-out"></i>
+                            <p>
+                                Sign Out
+                            </p>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </aside>
+
+
+    <div class="content-wrapper">
+        <section class="content-header">
+            <div class="container-fluid">
+                <div class="row mb-2">
+                    <div class="col-sm-6">
+                        <h1>Liste des Utilisateurs</h1>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <div>
+            <script>
+                if(sessionStorage.getItem('token')==null)
+                    window.location.href='/admin/login';
+                else
+                    document.getElementById('username').textContent=sessionStorage.getItem('name');
+            </script>
+        </div>
+
+        <section class="content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Liste des Utilisateurs</h3>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped projects">
+                        <thead>
+                        <tr>
+                            <th style="width: 20%">Name</th>
+                            <th style="width: 30%">Login</th>
+                            <th>Type</th>
+                            <th style="width: 8%" class="text-center">Date Creation</th>
+                            <th style="width: 20%">Status</th>
+                            <th style="width: 20%">Action</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="user:${users}">
+                                <td th:text="${user.getName()}"></td>
+                                <td th:text="${user.getLogin()}"></td>
+                                <td th:text="${user.getUserType()}"></td>
+                                <td th:text="${user.getDateTimeCreation()}"></td>
+                                <td>
+                                    <span
+                                            th:text="${user.isStatus() ? 'Active' : 'Desactive'}"
+                                            th:class="${user.isStatus() ? 'badge badge-success' : 'badge badge-danger'}"></span>
+                                </td>
+                                <td class="project-actions text-right">
+                                    <a th:class="${user.isStatus() ? 'btn btn-danger btn-sm' : 'btn btn-success btn-sm'}"
+                                       th:href="'/admin/actions/change_status?id='+${user.getId()}"
+                                       th:text="${user.isStatus() ? 'Desactiver' : 'Activer'}">
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+    </div>
+    <footer class="main-footer">
+        <div class="float-right d-none d-sm-block">
+            <b>Version</b> 1.0.0
+        </div>
+        <strong>Copyright &copy; 2014-2021 <a href="#">We</a>.</strong> All rights reserved.
+    </footer>
+    <aside class="control-sidebar control-sidebar-dark">
+    </aside>
+</div>
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<script th:src="@{/admin/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/admin/dist/js/adminlte.min.js}"></script>
+<script th:src="@{/admin/dist/js/demo.js}"></script>
+<script>
+    $.ajax({
+        type: "GET",
+        url: baseUrl+"/v1/tickets/all/by/motif/1",
+        success: function(response) {
+            if(response==null) {
+                toastr.info('Pas d\'utilisateur dans la file d\'attente', 'Information');
+                document.getElementById('body').style.display='none';
+                document.getElementById('start').style.display='block';
+            }else {
+                document.getElementById('id').textContent = response.identifiant;
+                document.getElementById('motif').textContent = response.motifs.name;
+                document.getElementById('body').style.display='block';
+                document.getElementById('start').style.display='none';
+                id=response.id;
+                identifier=response.identifiant;
+                sendName();
+            }
+        },
+        error: function(xhr, status, error) {
+            toastr.info('Pas d\'utilisateur dans la file d\'attente', 'Information');
+            document.getElementById('body').style.display='none';
+            document.getElementById('start').style.display='block';
+        }
+    });
+</script>
+</body>
+</html>

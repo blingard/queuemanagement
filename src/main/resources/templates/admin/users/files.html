@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fichier</title>
+
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" th:href="@{/admin/plugins/fontawesome-free/css/all.min.css}">
+  <link rel="stylesheet" th:href="@{/admin/dist/css/adminlte.min.css}">
+</head>
+<body class="hold-transition sidebar-mini">
+<div class="wrapper">
+
+  <nav class="main-header navbar navbar-expand navbar-white navbar-light">
+    <ul class="navbar-nav">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
+      </li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+        <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#" role="button">
+          <i class="fas fa-th-large"></i>
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+
+  <aside class="main-sidebar sidebar-dark-primary elevation-4">
+    <a class="brand-link">
+      <img th:src="@{/admin/dist/img/q.png}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8" />
+      <span class="brand-text font-weight-light">QUEUING</span>
+    </a>
+
+    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+      <div class="image">
+        <img th:src="@{/admin/dist/img/user2-160x160.jpg}" class="img-circle elevation-2" alt="User Image">
+      </div>
+      <div class="info">
+        <span id="username" class="d-block"></span>
+      </div>
+    </div>
+    <div class="sidebar">
+
+      <nav class="mt-2">
+        <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+          <li class="nav-item">
+            <a class="nav-link">
+              DashBoard
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <!--<i class="nav-icon fas fa-user-alt"></i>-->
+              <p>
+                Users
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a th:href="@{/admin/actions/create}" class="nav-link">
+                  <!--<i class="fas fa-plus nav-icon"></i>-->
+                  <p>Create</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a th:href="@{/admin/actions/list}" class="nav-link active">
+                  <!--<i class="fas fa-user nav-icon"></i>-->
+                  <p>List</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+
+          <li class="nav-item">
+            <a href="#" class="nav-link">
+              <!--<i class="nav-icon fas fa-user-alt"></i>-->
+              <p>
+                Motifs
+                <i class="right fas fa-angle-left"></i>
+              </p>
+            </a>
+            <ul class="nav nav-treeview">
+              <li class="nav-item">
+                <a th:href="@{/admin/motifs/create}" class="nav-link">
+                  <!--<i class="fas fa-plus nav-icon"></i>-->
+                  <p>Create</p>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a th:href="@{/admin/motifs/list}" class="nav-link active">
+                  <!--<i class="fas fa-user nav-icon"></i>-->
+                  <p>List</p>
+                </a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-item">
+            <a th:href="@{/home}" th:target="_blank" class="nav-link">
+              <p>
+                Home
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a th:href="@{/ticket}" th:target="_blank" class="nav-link">
+              <p>
+                Ticket
+              </p>
+            </a>
+          </li>
+
+
+          <li class="nav-item">
+            <a th:href="@{/admin/actions/file}" class="nav-link">
+              <!--<i class="nav-icon fas fa-sign-out"></i>-->
+              <p>
+                Fichier
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="/admin/logout" class="nav-link">
+              <i class="nav-icon fas fa-sign-out"></i>
+              <p>
+                Sign Out
+              </p>
+            </a>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </aside>
+
+  <div>
+    <script>
+      if(sessionStorage.getItem('token')==null)
+        window.location.href='/admin/login';
+      else
+        document.getElementById('username').textContent=sessionStorage.getItem('name');
+    </script>
+  </div>
+  <div class="content-wrapper">
+    <section class="content-header">
+      <div class="container-fluid">
+        <div class="row mb-2">
+          <div class="col-sm-6">
+            <h1>Fichier</h1>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-12">
+            <div class="card card-primary">
+              <div class="card-header">
+                <h3 class="card-title">Upload de Vidéo</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <video id="videoPreview" class="container-fluid" th:src="${videos}" controls>
+                    Votre navigateur ne supporte pas la vidéo HTML5.
+                  </video>
+                </div>
+                <div class="form-group">
+                  <label>Fichier Video: </label>
+                  <input required id="file" class="form-control" type="file" accept="video/mp4" onchange="previewVideo()"/>
+                </div>
+                <div class="form-group">
+                  <progress id="progressBar" value="0" max="100" style="width: 100%;"></progress>
+                  <p id="progressText">0%</p>
+                </div>
+              </div>
+              <div class="card-footer">
+                <button type="button" onclick="uploadFile()" class="btn btn-primary">Enregistrer</button>
+              </div>
+
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-block">
+      <b>Version</b> 1.0.0
+    </div>
+    <strong>Copyright &copy; 2014-2021 <a href="#">We</a>.</strong> All rights reserved.
+  </footer>
+  <aside class="control-sidebar control-sidebar-dark">
+  </aside>
+</div>
+
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<script th:src="@{/admin/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/admin/dist/js/adminlte.min.js}"></script>
+<script th:src="@{/admin/dist/js/demo.js}"></script>
+<script>
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000
+  });
+  function uploadFile() {
+    var file = document.getElementById("file").files[0];
+    var formData = new FormData();
+    formData.append("file", file);
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.upload.addEventListener("progress", function (e) {
+      if (e.lengthComputable) {
+        var percentComplete = (e.loaded / e.total) * 100;
+        document.getElementById("progressBar").value = percentComplete;
+        document.getElementById("progressText").innerText = Math.round(percentComplete) + '%';
+      }
+    }, false);
+
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        Toast.fire({
+          icon: 'success',
+          title: 'Fichier uploadé avec succès !'
+        });
+        window.location='/admin/actions/list';
+      }
+    };
+
+    xhr.open("POST", "/admin/actions/saveFile", true);
+    xhr.send(formData);
+  }
+
+  function previewVideo() {
+    var fileInput = document.getElementById('file');
+    var videoPreview = document.getElementById('videoPreview');
+    var file = fileInput.files[0];
+
+    if (file) {
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        videoPreview.src = e.target.result;
+        videoPreview.style.display = 'block'; // Afficher la vidéo
+      }
+      reader.readAsDataURL(file);
+    } else {
+      videoPreview.style.display = 'none'; // Masquer la vidéo si aucun fichier
+    }
+  }
+</script>
+</body>
+</html>

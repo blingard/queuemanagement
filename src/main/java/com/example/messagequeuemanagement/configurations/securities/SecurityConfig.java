@@ -1,7 +1,6 @@
 package com.example.messagequeuemanagement.configurations.securities;
 
 import com.example.messagequeuemanagement.implementations.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -27,27 +26,87 @@ import org.springframework.web.filter.CorsFilter;
 public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final JwtAuthenticationFilter jwtAuthFilter;
+    private final CustomAuthenticationSuccessHandler successHandler;
     private final PasswordEncoder passwordEncoder;
-    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationFilter jwtAuthFilter, @Qualifier("passwordEncoder") PasswordEncoder passwordEncoder) {
+
+    public SecurityConfig(UserDetailsServiceImpl userDetailsService, JwtAuthenticationFilter jwtAuthFilter, CustomAuthenticationSuccessHandler successHandler, PasswordEncoder passwordEncoder) {
         this.userDetailsService = userDetailsService;
         this.jwtAuthFilter = jwtAuthFilter;
+        this.successHandler = successHandler;
         this.passwordEncoder = passwordEncoder;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+        /*http
+                .csrf(httpSecurityCsrfConfigurer -> httpSecurityCsrfConfigurer.disable())
+                .authorizeHttpRequests(
+                        auth -> {
+                            auth
+                                    //.requestMatchers("/admin/plugins/**").permitAll()
+                                    //.requestMatchers("/admin/dist/**").permitAll()
+                                    .requestMatchers("/monitoring").permitAll()
+                                    .requestMatchers("/ticket").permitAll()
+                                    .requestMatchers("/cashier/login").permitAll()
+                                    .requestMatchers("/login").permitAll()
+                                    //.requestMatchers("/admin/login").permitAll()
+                                    //.requestMatchers("/admin/profile").permitAll();
+                                    .requestMatchers("/admin/**").permitAll().anyRequest().permitAll()
+                            ;
+                                    //.requestMatchers("/admin/actions/**").hasAuthority("ADMIN")
+                                    //.requestMatchers("/cashier/actions/**").hasAnyAuthority("SELLER","TELLER","CASHIER");
+                        }
+                ).formLogin(
+                        form -> form
+                                .loginPage("/admin/login")
+                                .loginProcessingUrl("/admin/login")
+                                .successHandler(successHandler)
+                                .permitAll()
+                ).logout(
+                        logout -> logout
+                                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                                .permitAll()
+
+                );*/
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
                         auth -> {
                             auth
                                     .requestMatchers(
-                                            "/v1/motifs/all",
-                                            "/v1/tickets/generate/**",
-                                            "/v1/tickets/create/**",
-                                            "/swagger-ui-custom.html",
+                                            "/test/**",
+                                            "/service",
+                                            "/service/list-by-cp-id/**",
+                                            "/api/article/active",
+                                            "//swagger-ui-custom.html",
                                             "/v3/api-docs/**",
-                                            "/api/auth/login")
+                                            "/api/article/get/**",
+                                            "/api/article/active/**",
+                                            "/api/article/active/home",
+                                            "/api/article/get-by-categorie/**",
+                                            "/api/centrepartenaire/getById/**",
+                                            "/api/centrepartenaire/localisation",
+                                            "/user/register",
+                                            "/denonciation",
+                                            "/message/save",
+                                            "/user/register",
+                                            "/denonciation/list/**",
+                                            "/api/file/**",
+                                            "/api/missions",
+                                            "/generate-pdf/**",
+                                            "/api/missions/active/**",
+                                            "/api/missions/active/home",
+                                            "/api/missions/find-by-id/**",
+                                            "/produit/getById/**",
+                                            "/rapport/getById/**",
+                                            "/rapport/list/**",
+                                            "/api/valeur/find-active",
+                                            "/api/auth/login",
+                                            "/api/parametres/get/**",
+                                            "/api/temoignage/active",
+                                            "/api/mediatech/active",
+                                            "/api/temoignage/active/home",
+                                            "/api/temoignage/getById/**")
                                     .permitAll()
                                     .requestMatchers(HttpMethod.OPTIONS, "/**")
                                     .permitAll()

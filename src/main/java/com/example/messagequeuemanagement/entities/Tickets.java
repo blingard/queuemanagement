@@ -1,6 +1,7 @@
 package com.example.messagequeuemanagement.entities;
 
 import com.example.messagequeuemanagement.enumerations.Sources;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +27,6 @@ public class Tickets {
     @Column(nullable = false, unique = true)
     String identifiant;
 
-    @CreationTimestamp
     Instant dateTimeCreation;
 
     @Enumerated(EnumType.STRING)
@@ -39,10 +39,16 @@ public class Tickets {
     boolean recue;
 
     @Column(columnDefinition = "boolean default false")
+    boolean calling;
+
+    @Column(columnDefinition = "boolean default false")
     boolean traiter;
 
     @Column(columnDefinition = "boolean default false")
     boolean transfert;
+
+    @Column(columnDefinition = "boolean default false")
+    boolean abscent;
 
     @Column(length = 1000)
     String comments;

@@ -29,23 +29,8 @@ public class TicketsController {
     }
 
     @GetMapping("all/by/motif/{id}")
-    public ResponseEntity<List<Tickets>> getTicketToReceiveByMotif(@PathVariable("id") Long id) throws TicketsException{
-        // Obtenir la date actuelle
-        LocalDate today = LocalDate.now();
-        // Obtenir le fuseau horaire par défaut du système
-        ZoneId zoneId = ZoneId.systemDefault();
-
-
-        // Créer un objet LocalDateTime pour l'heure de début de la journée (00:00)
-        LocalDateTime startOfDay = today.atStartOfDay();
-
-        // Créer un objet LocalDateTime pour l'heure de fin de la journée (23:59)
-        LocalDateTime endOfDay = today.atTime(LocalTime.of(23, 59, 59));
-
-        // Convertir les LocalDateTime en Instant
-        Instant start = startOfDay.atZone(zoneId).toInstant();
-        Instant end = endOfDay.atZone(zoneId).toInstant();
-        return ResponseEntity.ok(service.getTicketToReceiveByMotif(start, end, id));
+    public ResponseEntity<Tickets> getTicketToReceiveByMotif(@PathVariable("id") Long id) throws TicketsException{
+        return ResponseEntity.ok(service.getTicketToReceiveByMotif(id));
     }
     @GetMapping("{id}")
     public ResponseEntity<Tickets> findTicketById(@PathVariable("id") Long id) throws TicketsException{

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Login</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback" />
+  <link rel="stylesheet" th:href="@{/admin/plugins/fontawesome-free/css/all.min.css}" />
+  <link rel="stylesheet" th:href="@{/admin/plugins/icheck-bootstrap/icheck-bootstrap.min.css}" />
+  <link rel="stylesheet" th:href="@{/admin/dist/css/adminlte.min.css}" />
+  <script th:src="@{/admin/plugins/toastr/toastr.min.js}"></script>
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+  <div class="login-logo">
+    <a><b>QUEUE</b>Management</a>
+  </div>
+  <div class="card">
+    <div class="card-body login-card-body">
+      <div id="error" style="display: none">
+        <div class="alert alert-danger">Invalid Login and Password.</div>
+      </div>
+
+      <form>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" id="username" name="username" placeholder="Login" />
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-user"></span>
+            </div>
+          </div>
+        </div>
+        <div class="input-group mb-3">
+          <input type="password" class="form-control" id="password" name="password" placeholder="Password" />
+          <div class="input-group-append">
+            <div class="input-group-text">
+              <span class="fas fa-lock"></span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <button type="button" onclick="connection()"  class="btn btn-primary btn-block">Connexion</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<script th:src="@{/admin/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/admin/dist/js/adminlte.min.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/jwt-decode@3.1.2/build/jwt-decode.min.js"></script>
+<script>
+  sessionStorage.clear();
+  function connection(){
+
+    document.getElementById('error').style.display='none';
+    let login = document.getElementById('username').value;
+    let pwd = document.getElementById('password').value;
+    let data = {
+      login:login,
+      password:pwd
+    };
+    $.ajax({
+      type: "POST",
+      url: baseUrl+"/api/auth/login",
+      data: JSON.stringify(data),
+      contentType: "application/json",
+      success: function(response) {
+        let token = response.accessToken.replace("Bearer ","");
+        sessionStorage.setItem("token",response.accessToken);
+        const decoded = jwt_decode(token);
+        sessionStorage.setItem("id",decoded.jti);
+        sessionStorage.setItem("roles",decoded.roles);
+        let roles = [];
+        roles = decoded.roles;
+        sessionStorage.setItem("name",decoded.sub);
+        if (roles.includes('ADMIN')) {
+          window.location.href='/admin/actions/list';
+        } else {
+          window.location.href='/other';
+        }
+      },
+      error: function(xhr, status, error) {
+        document.getElementById('error').style.display='block';
+      }
+    });
+
+  }
+</script>
+</body>
+</html>

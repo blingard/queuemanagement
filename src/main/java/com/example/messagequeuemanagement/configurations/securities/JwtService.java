@@ -1,5 +1,6 @@
 package com.example.messagequeuemanagement.configurations.securities;
 
+import com.example.messagequeuemanagement.dtos.UserDetailsImpl;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -22,10 +23,11 @@ public class JwtService {
         return extractClaim(jwt,Claims::getSubject);
     }
 
-    public String generateToken(Map<String, Object> extraClaims, UserDetails userDetails) {
+    public String generateToken(Map<String, Object> extraClaims, UserDetailsImpl userDetails) {
         String token = Jwts
                 .builder()
                 .setClaims(extraClaims)
+                .setId(userDetails.getId().toString())
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis()+ (1000*36000*24)))
@@ -46,7 +48,7 @@ public class JwtService {
         return generateTokenRefresh(id);
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(UserDetailsImpl userDetails) {
         Map<String, Object> roleList = new HashMap<>();
         roleList.put(
                 "roles",

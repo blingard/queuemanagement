@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en"  xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cashier</title>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
+  <link rel="stylesheet" th:href="@{/admin/plugins/fontawesome-free/css/all.min.css}" />
+  <link rel="stylesheet" th:href="@{/admin/dist/css/adminlte.min.css}" />
+  <link rel="stylesheet" th:href="@{/admin/plugins/toastr/toastr.css}" />
+  <style>
+    .centrer {
+      padding: 10px;
+      text-align: center;
+    }
+
+    .centrer .centrer1 {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body class="hold-transition layout-top-nav">
+<div class="wrapper">
+  <nav class="main-header navbar navbar-expand-md navbar-light navbar-white">
+    <div class="container">
+      <a class="navbar-brand">
+        <img th:src="@{/admin/dist/img/q.png}" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">Queuing</span>
+      </a>
+
+
+
+    </div>
+  </nav>
+  <div class="content-wrapper">
+    <div class="content">
+      <div class="container">
+        <div class="row" id="start">
+          <div class="col-lg-12">
+            <div class="row centrer">
+              <div class="col-md-12 centrer1">
+                <button class="btn btn-success" type="button" onclick="getMotifs()">Start</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="body" style="display: none">
+          <div class="row" id="body_sub">
+          </div>
+          <div class="row" id="tickets"  style="display: none">
+            <div class="col-lg-6">
+              <div class="card card-primary card-outline centrer" id="ticket">
+                <div class="card-header">
+                  <center><h5 class="card-title m-0">Ticket</h5></center>
+                </div>
+                <div class="card-body centrer1">
+
+                  <h6 id="id" class="card-title">______</h6>
+
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-6">
+              <div class="card card-primary card-outline centrer">
+                <div class="card-header">
+                  <center><h5 class="card-title m-0">Action</h5></center>
+                </div>
+                <div class="card-body centrer1">
+
+                  <button type="button" onclick="printTicket()" class="card-title">OK</button>
+
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <aside class="control-sidebar control-sidebar-dark">
+  </aside>
+
+  <footer class="main-footer">
+    <div class="float-right d-none d-sm-inline">
+      Anything you want
+    </div>
+    <strong>Copyright &copy; 2014-2021 <a >We.io</a>.</strong> All rights reserved.
+  </footer>
+</div>
+
+<script th:src="@{/admin/plugins/jquery/jquery.min.js}"></script>
+<script th:src="@{/admin/plugins/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/admin/dist/js/adminlte.min.js}"></script>
+<script th:src="@{/admin/dist/js/demo.js}"></script>
+<script th:src="@{/admin/plugins/toastr/toastr.min.js}"></script>
+<script>
+  let id;
+  let code;
+  function getMotifs() {
+    $.ajax({
+      type: "GET",
+      url: baseUrl+"/v1/motifs/active",
+      contentType: "application/json",
+      success: function(response) {
+        let startDiv = document.getElementById('body_sub');
+        response.forEach(data=>{
+          let newColDiv = document.createElement('div');
+          newColDiv.className = 'col-lg-3';
+          newColDiv.innerHTML = `<div class="card card-primary card-outline">
+                <div class="card-header">
+                  <center><h5 class="card-title m-0">Motif: ${data.initial}</h5></center>
+                </div>
+                <div class="card-body">
+                  <button type="button" onclick="createTicket(${data.id})" class="card-title">${data.name}</button>
+                </div>
+              </div>`;
+          startDiv.appendChild(newColDiv);
+        });
+        document.getElementById('body').style.display='block';
+        document.getElementById('start').style.display='none';
+
+      },
+      error: function(xhr, status, error) {
+        document.getElementById('body').style.display='none';
+        document.getElementById('start').style.display='block';
+      }
+    });
+
+  }
+
+  function createTick() {
+    let data = {
+      "identifiant":code,
+      "source":"WEBSITE",
+      "motifs":id
+    }
+    $.ajax({
+      type: "POST",
+      url: baseUrl+"/v1/tickets/create/web",
+      data: JSON.stringify(data),
+      contentType: "application/json",
+      success: function(response) {
+      },
+      error: function(xhr, status, error) {
+        alert("error");
+      }
+    });
+  }
+  function printTicket() {
+    createTick();
+    let ticketContent = document.getElementById('ticket').innerHTML;
+    let printWindow = window.open('', '', 'height=600,width=800');
+    printWindow.document.write('<html><head><title>Impression du Ticket</title>');
+    printWindow.document.write('<style>.card { border: 1px solid #000; padding: 20px; } .card-title { font-size: 18px; }</style>'); // Optionnel: ajouter des styles CSS pour l'impression
+    printWindow.document.write('</head><body>');
+    printWindow.document.write(ticketContent);
+    printWindow.document.write('</body></html>');
+    printWindow.document.close();
+    printWindow.print();
+    printWindow.close();
+    document.getElementById('body').style.display='none';
+    document.getElementById('start').style.display='block';
+
+  }
+
+
+  function createTicket(data) {
+    id=data;
+    $.ajax({
+      type: "GET",
+      url: baseUrl+"/v1/tickets/generate/V",
+      contentType: "application/json",
+      success: function(response) {
+        document.getElementById('tickets').style.display='block';
+        document.getElementById('body_sub').style.display='none';
+        document.getElementById('id').textContent=response;
+        code=response;
+      },
+      error: function(xhr, status, error) {
+        document.getElementById('tickets').style.display='none';
+        document.getElementById('body_sub').style.display='block';
+      }
+    });
+  }
+</script>
+
+</body>
+</html>

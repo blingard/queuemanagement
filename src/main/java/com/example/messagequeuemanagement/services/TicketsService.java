@@ -14,7 +14,8 @@ public interface TicketsService {
     void createTicketMobile(TicketRecord ticketRecord) throws TicketsException, MotifException;
     void createTicketWeb(TicketRecord ticketRecord) throws TicketsException, MotifException;
     void createTicketDevice(TicketRecord ticketRecord) throws TicketsException, MotifException;
-    List<Tickets> getTicketToReceiveByMotif(Instant start, Instant end, Long id) throws TicketsException;
+    Tickets getTicketToReceiveByMotif(Long id) throws TicketsException;
+    List<Tickets> getTicketToReceiveByMotif() throws TicketsException;
     Tickets findTicketById(Long id) throws TicketsException;
     void closeTicket(Long id) throws TicketsException;
     void transfertTicket(Long id, Long userId) throws TicketsException;

@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -78,6 +79,20 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
+    public void changeStatus(Long id) throws UtilisateurException {
+        Utilisateur utilisateur = repository.getReferenceById(id);
+        if(utilisateur == null)
+            throw new UtilisateurException("User with Id = "+id+" not found", 404);
+        utilisateur.setStatus(!utilisateur.isStatus());
+        repository.save(utilisateur);
+    }
+
+    @Override
+    public void saveFile(MultipartFile file) throws UtilisateurException {
+        System.err.println("Save file");
+    }
+
+    @Override
     public Utilisateur findUserById(Long id) throws UtilisateurException {
         Utilisateur utilisateur = repository.getReferenceById(id);
         if(utilisateur == null)
@@ -91,12 +106,12 @@ public class UtilisateurServiceImpl implements UtilisateurService {
     }
 
     @Override
-    public Page<Utilisateur> findAll(int page, int size) throws UtilisateurException {
+    public Page<Utilisateur> findAll(int page, int size) {
         return repository.findAll(PageRequest.of(page, size));
     }
 
     @Override
-    public List<Utilisateur> findAll() throws UtilisateurException {
+    public List<Utilisateur> findAll(){
         return repository.findAll();
     }
 }

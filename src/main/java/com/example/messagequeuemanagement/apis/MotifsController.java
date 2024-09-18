@@ -53,4 +53,9 @@ public class MotifsController {
     public ResponseEntity<List<Motifs>> findAllMotif() throws MotifException{
         return ResponseEntity.ok(service.findAllMotif());
     }
+
+    @GetMapping("active")
+    public ResponseEntity<List<Motifs>> findAllActiveMotif() throws MotifException{
+        return ResponseEntity.ok(service.findAllActiveMotif());
+    }
 }

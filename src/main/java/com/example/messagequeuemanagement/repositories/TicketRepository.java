@@ -17,7 +17,7 @@ public interface TicketRepository extends JpaRepository<Tickets, Long> {
     Page<Tickets> findTicketsByRecueAndMotifs(boolean recue, Motifs motifs, Pageable pageable);
     List<Tickets> findTicketsByRecue(boolean recue);
 
-    @Query("select t from Tickets t where t.recue = :recue and t.traiter = false and t.transfert = false "
+    @Query("select t from Tickets t left join fetch t.motifs where t.recue = :recue and t.traiter = false and t.transfert = false "
             +"and t.dateTimeCreation >= :start and t.motifs.id = :motif "
                     +"and t.dateTimeCreation <= :end")
     List<Tickets> findTicketsByRecueOrderByDate(
@@ -25,6 +25,9 @@ public interface TicketRepository extends JpaRepository<Tickets, Long> {
             @Param("motif") Long motif,
             @Param("start") Instant start,
             @Param("end") Instant end);
+
+    List<Tickets> findTicketsByCallingIsFalseAndDateTimeCreationBetween(Instant start, Instant end);
+    List<Tickets> findTicketsByCallingIsFalse();
     Page<Tickets> findTicketsByTransfertAndMotifs(boolean transfert, Motifs motifs, Pageable pageable);
     //List<Tickets> findTicketsByTransfert();
     List<Tickets> findTicketsByTransfert(boolean transfert);

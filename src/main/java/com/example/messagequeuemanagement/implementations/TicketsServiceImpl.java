@@ -16,7 +16,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
+import java.time.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -45,11 +45,37 @@ public class TicketsServiceImpl implements TicketsService {
     }
 
     @Override
-    public List<Tickets> getTicketToReceiveByMotif(Instant start, Instant end, Long id) throws TicketsException {
-        Motifs motifs = motifsRepository.getReferenceById(id);
+    public Tickets getTicketToReceiveByMotif(Long id) throws TicketsException {
+        // Obtenir la date actuelle
+        LocalDate today = LocalDate.now();
+        // Obtenir le fuseau horaire par défaut du système
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        // Créer un objet LocalDateTime pour l'heure de début de la journée (00:00)
+        LocalDateTime startOfDay = today.atStartOfDay();
+        // Créer un objet LocalDateTime pour l'heure de fin de la journée (23:59)
+        LocalDateTime endOfDay = today.atTime(LocalTime.of(23, 59, 59));
+        // Convertir les LocalDateTime en Instant
+        Instant start = startOfDay.atZone(zoneId).toInstant();
+        Instant end = endOfDay.atZone(zoneId).toInstant();
+        /*Motifs motifs = motifsRepository.getReferenceById(id);
         if(motifs==null)
-            return new ArrayList<>(0);
-        return repository.findTicketsByRecueOrderByDate(Boolean.FALSE.booleanValue(), id, start, end);
+            throw new TicketsException("Not found", 404);*/
+
+        List<Tickets> data = repository.findTicketsByCallingIsFalse().stream()
+                .filter(tickets -> tickets.getDateTimeCreation().isAfter(start) && tickets.getDateTimeCreation().isBefore(end))
+                .toList();
+        if(data.isEmpty())
+            throw new TicketsException("Not found", 404);
+        Tickets tickets = data.get(0);
+        tickets.setCalling(Boolean.TRUE);
+        tickets = repository.save(tickets);
+        return tickets;
+    }
+
+    @Override
+    public List<Tickets> getTicketToReceiveByMotif() throws TicketsException {
+        return repository.findAll();
     }
 
     @Override
@@ -68,6 +94,8 @@ public class TicketsServiceImpl implements TicketsService {
         Tickets tickets = optionalTickets.get();
         tickets.setComments("Traiter");
         tickets.setRecue(Boolean.TRUE.booleanValue());
+        tickets.setCalling(Boolean.TRUE.booleanValue());
+        repository.save(tickets);
 
     }
 
@@ -78,7 +106,7 @@ public class TicketsServiceImpl implements TicketsService {
 
     @Override
     public String generateUniqueString(String origin) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("MMddHHmmSSS");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MMddHHmmssSSS");
         String timestamp = dateFormat.format(new Date());
 
         // Extraction des différentes parties du timestamp
@@ -103,9 +131,11 @@ public class TicketsServiceImpl implements TicketsService {
                 .recue(Boolean.FALSE.booleanValue())
                 .motifs(motifs)
                 .source(sources)
+                .dateTimeCreation(Instant.now())
                 .comments(String.valueOf(' ').trim())
                 .traiter(Boolean.FALSE.booleanValue())
                 .transfert(Boolean.FALSE.booleanValue())
+                .calling(Boolean.FALSE.booleanValue())
                 .build();
         repository.save(tickets);
     }

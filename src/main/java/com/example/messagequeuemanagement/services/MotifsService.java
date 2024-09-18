@@ -5,6 +5,7 @@ import com.example.messagequeuemanagement.entities.Motifs;
 import com.example.messagequeuemanagement.exceptions.MotifException;
 import com.example.messagequeuemanagement.exceptions.UtilisateurException;
 import com.example.messagequeuemanagement.records.MotifRecord;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -13,8 +14,11 @@ public interface MotifsService {
     void updateMotif(Long id, String name) throws MotifException;
     void disableMotif(Long id) throws MotifException;
     void enableMotif(Long id) throws MotifException;
+    void changeStatus(Long id) throws MotifException;
     Motifs findMotifById(Long id)  throws MotifException;
+    List<Motifs> findAllActiveMotif()  throws MotifException;
     List<Motifs> findAllMotif()  throws MotifException;
+    Page<Motifs> findAll(int page, int size);
 
 
 }

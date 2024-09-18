@@ -12,6 +12,8 @@ import com.example.messagequeuemanagement.services.MotifsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -67,6 +69,16 @@ public class MotifServiceImpl implements MotifsService {
     }
 
     @Override
+    public void changeStatus(Long id) throws MotifException{
+        Motifs motifs = repository.getReferenceById(id);
+        if(motifs == null)
+            throw new MotifException("User with Id = "+id+" not found", 404);
+        motifs.setActive(!motifs.isActive());
+        repository.save(motifs);
+
+    }
+
+    @Override
     public Motifs findMotifById(Long id) throws MotifException {
         Optional<Motifs> motifsOptional = repository.findById(id);
         if(motifsOptional.isEmpty())
@@ -75,7 +87,17 @@ public class MotifServiceImpl implements MotifsService {
     }
 
     @Override
-    public List<Motifs> findAllMotif() throws MotifException {
+    public List<Motifs> findAllActiveMotif() throws MotifException {
         return repository.findMotifsByActive(Boolean.TRUE);
+    }
+
+    @Override
+    public List<Motifs> findAllMotif() throws MotifException {
+        return repository.findAll();
+    }
+
+    @Override
+    public Page<Motifs> findAll(int page, int size) {
+        return repository.findAll(PageRequest.of(page, size));
     }
 }
