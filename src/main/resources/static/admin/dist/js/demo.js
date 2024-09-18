@@ -6,8 +6,8 @@
  */
 
 /* eslint-disable camelcase */
-var url = 'ws://localhost:8084/spring-boot-tutorial';
-var baseUrl = 'http://localhost:8084';
+var url = 'ws://13.39.158.13:8084/spring-boot-tutorial';
+var baseUrl = 'http://13.39.158.13:8084';
 
 (function ($) {
   'use strict'
